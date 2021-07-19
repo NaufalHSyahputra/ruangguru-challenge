@@ -14,17 +14,34 @@ services:
         depends_on: 
             - mysql
             - golang
+            - react_admin
+            - react_client
         networks: 
             - app
 
-    node: 
+    react_client: 
         restart: always
         build:
             context: .
             dockerfile: node.Dockerfile
+            target: client
         ports:
-            - 5000:5000            
-            - 5001:5001            
+            - 5000:5000  
+        environment: 
+            PORT: 5000
+        networks: 
+            - app
+
+    react_admin: 
+        restart: always
+        build:
+            context: .
+            dockerfile: node.Dockerfile
+            target: admin
+        ports:
+            - 5001:5001 
+        environment: 
+            PORT: 5001
         networks: 
             - app
 
