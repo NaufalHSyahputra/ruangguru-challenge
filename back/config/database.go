@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -39,6 +40,13 @@ func DbURL(dbConfig *DBConfig) string {
 		dbConfig.Port,
 		dbConfig.DBName,
 	)
+}
+func NewSQLiteDB() *gorm.DB {
+	DB, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	if err != nil {
+		log.Panic(err)
+	}
+	return DB
 }
 func NewDB(params ...string) *gorm.DB {
 	var err error

@@ -3,15 +3,21 @@ package models
 import (
 	"rg_backend/config"
 
+	"database/sql"
+	"time"
+
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	Base
-	Email    string `json:"email"`
-	Password string `json:"password" gorm:"->:false;<-:create"`
-	Name     string `json:"name"`
+	ID        uint         `gorm:"primaryKey"`
+	Email     string       `json:"email"`
+	Password  string       `json:"password"`
+	Name      string       `json:"name"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
 }
 
 // Claims represent the structure of the JWT token

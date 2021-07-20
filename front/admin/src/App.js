@@ -1,24 +1,43 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense, useState } from "react";
+// import routes from "./Routes/index";
+import SignIn from "./Pages/SignIn";
+import { UserContext } from "./Context/UserContext";
+import { BrowserRouter as Router, Route, Switch, Redirect,useHistory } from 'react-router-dom';
+import useFindUser from './Hooks/useFindUser';
+import Dashboard from './Pages/Dashboard';
+function PrivateRoute(props) {
+  console.log(props)
+  const { component: Component, ...rest } = props;
+  if(localStorage.getItem("access_token")){
+     return ( <Route {...rest} render={(props) => 
+          (<Component {...props}/>)
+           }
+        />
+      )}
+  //redirect if there is no user 
+  return <Redirect to='/login' />
+}
 
 function App() {
+  const { user, setUser, isLoading } = useFindUser();
+  const [test, setTest] = useState(null)
+  const history = useHistory();
+  React.useEffect(() => {
+    setTest(user)
+  }, []);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Suspense>
+      <Router>
+        <UserContext.Provider value={{ user, setUser, isLoading }}>
+          <Switch>
+            <Route exact path="/" component={SignIn} />
+            <Route path="/login" component={SignIn} />
+            <PrivateRoute path="/home" component={Dashboard} user={test}/>
+            {/* <Route component={NotFound} /> */}
+          </Switch>
+        </UserContext.Provider>
+      </Router>
+    </Suspense>
   );
 }
 

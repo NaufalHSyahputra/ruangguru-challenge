@@ -29,6 +29,9 @@ services:
             - 5000:5000  
         environment: 
             PORT: 5000
+            REACT_APP_PUBLIC_API_URL: https://us-central1-silicon-airlock-153323.cloudfunctions.net
+            REACT_APP_ADMIN_URL: http://127.0.0.1:5001
+            REACT_APP_API_URL: http://127.0.0.1:8080
         networks: 
             - app
 
@@ -42,6 +45,8 @@ services:
             - 5001:5001 
         environment: 
             PORT: 5001
+            REACT_APP_PUBLIC_API_URL: https://us-central1-silicon-airlock-153323.cloudfunctions.net
+            REACT_APP_API_URL: http://127.0.0.1:8080
         networks: 
             - app
 
@@ -49,10 +54,10 @@ services:
         image: mysql:5.7
         command: --default-authentication-plugin=mysql_native_password
         environment:
-            MYSQL_ROOT_PASSWORD: "RGTESTST20211907"
+            MYSQL_ROOT_PASSWORD: RGTESTST20211907
             MYSQL_DATABASE: ruangguru_client
             MYSQL_USER: rg_test
-            MYSQL_PASSWORD: "RGTESTST20211907"
+            MYSQL_PASSWORD: RGTESTST20211907
         ports:
             - 3306:3306
         networks: 
@@ -65,5 +70,13 @@ services:
         ports: 
             - 8080:8080
         restart: unless-stopped
+        environment:
+            APP_PORT: 8080
+            DB_HOST: mysql
+            DB_PORT: 3306
+            DB_USERNAME: rg_test
+            DB_PASSWORD: RGTESTST20211907
+            DB_DATABASE: ruangguru_client
+            JWT_SECRET: IblvPMNKeRQ9bw9g5r0nRQ6J3i7oydqmmxL2UrbsJYZlrQPA5i1xhi9FAu3GHfFp
         networks: 
             - app

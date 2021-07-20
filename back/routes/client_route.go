@@ -10,5 +10,5 @@ func ClientRoutes(app fiber.Router) {
 	apiRoutes := app.Group("api")
 
 	clientRoutes := apiRoutes.Group("client")
-	clientRoutes.Get("/check-user-id/:userId", client.CheckUserId)
+	clientRoutes.Post("/redeem", client.SaveUserData)
 }

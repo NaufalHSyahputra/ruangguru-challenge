@@ -4,6 +4,8 @@ import (
 	"os"
 	"rg_backend/app/models"
 	db "rg_backend/config"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -13,21 +15,21 @@ import (
 var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 // GenerateTokens returns the access and refresh tokens
-func GenerateTokens(uuid string) (string, string) {
-	claim, accessToken := GenerateAccessClaims(uuid)
+func GenerateTokens(id uint) (string, string) {
+	claim, accessToken := GenerateAccessClaims(id)
 	refreshToken := GenerateRefreshClaims(claim)
 
 	return accessToken, refreshToken
 }
 
 // GenerateAccessClaims returns a claim and a acess_token string
-func GenerateAccessClaims(uuid string) (*models.Claims, string) {
+func GenerateAccessClaims(id uint) (*models.Claims, string) {
 
 	t := time.Now()
 	claim := &models.Claims{
 		StandardClaims: jwt.StandardClaims{
-			Issuer:    uuid,
-			ExpiresAt: t.Add(15 * time.Minute).Unix(),
+			Issuer:    strconv.FormatUint(uint64(id), 10),
+			ExpiresAt: t.Add(1440 * time.Minute).Unix(),
 			Subject:   "access_token",
 			IssuedAt:  t.Unix(),
 		},
@@ -82,14 +84,23 @@ func GenerateRefreshClaims(cl *models.Claims) string {
 // SecureAuth returns a middleware which secures all the private routes
 func SecureAuth() func(*fiber.Ctx) error {
 	return func(c *fiber.Ctx) error {
-		accessToken := c.Cookies("access_token")
+		authorization := c.Get("Authorization")
+		if len(authorization) <= 0 {
+			return c.SendStatus(fiber.StatusUnauthorized)
+		}
+		splitToken := strings.Split(authorization, "Bearer ")
+		accessToken := splitToken[1]
 		claims := new(models.Claims)
-
 		token, err := jwt.ParseWithClaims(accessToken, claims,
 			func(token *jwt.Token) (interface{}, error) {
 				return jwtKey, nil
 			})
-
+		if err != nil {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error":   true,
+				"general": err.Error(),
+			})
+		}
 		if token.Valid {
 			if claims.ExpiresAt < time.Now().Unix() {
 				return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{

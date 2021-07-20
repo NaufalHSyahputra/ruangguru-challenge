@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"rg_backend/app/helpers"
 	"rg_backend/config"
 	"rg_backend/database"
 	"rg_backend/routes"
@@ -11,6 +12,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -20,8 +23,9 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	//Database
-	config.NewDB()
-	db := config.DB
+	config.NewSQLiteDB()
+	db, _ := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+
 	// sqlDB := db.DB()
 	database.InitMigration(db)
 	//Fiber
@@ -31,5 +35,9 @@ func main() {
 	}))
 	routes.ClientRoutes(app)
 	routes.AuthRoutes(app)
-	app.Listen(fmt.Sprintf(":%v", os.Getenv("APP_PORT")))
+	// JWT Middleware
+	app.Use(helpers.SecureAuth())
+	routes.UserRoutes(app)
+	routes.AdminRoutes(app)
+	log.Fatal(app.Listen(fmt.Sprintf(":%v", os.Getenv("APP_PORT"))))
 }

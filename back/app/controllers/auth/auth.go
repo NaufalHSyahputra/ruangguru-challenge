@@ -11,7 +11,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var DB = config.DB
+type UserData struct {
+	ID    uint   `gorm:"primaryKey"`
+	Email string `json:"email"`
+	Name  string `json:"name"`
+}
 
 func LoginUser(c *fiber.Ctx) error {
 	p := new(requests.LoginForm)
@@ -25,30 +29,44 @@ func LoginUser(c *fiber.Ctx) error {
 		})
 	}
 	u := new(models.User)
-
-	if res := DB.Where("email = ?", p.Email).First(&u); res.RowsAffected <= 0 {
+	u2 := new(UserData)
+	config.DB.Model(models.User{}).Where("email = ?", p.Email).First(&u2)
+	if res := config.DB.Where("email = ?", p.Email).First(&u); res.RowsAffected <= 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
+			"success": false,
 			"message": "Invalid Email!",
 		})
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(p.Password)); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error":   true,
+			"success": false,
 			"message": "Password is incorrect!",
 		})
 	}
 
-	accessToken, refreshToken := helpers.GenerateTokens(u.UUID.String())
-	accessCookie, refreshCookie := helpers.GetAuthCookies(accessToken, refreshToken)
+	accessToken, refreshToken := helpers.GenerateTokens(u.ID)
+	accessCookie, _ := helpers.GetAuthCookies(accessToken, refreshToken)
 
 	c.Cookie(accessCookie)
-	c.Cookie(refreshCookie)
+	// c.Cookie(refreshCookie)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
+		"success":      true,
+		"message":      "Login Success",
+		"access_token": accessToken,
+		"user":         u2,
+		// "refresh_token": refreshToken,
 	})
+}
 
+func GetUser(c *fiber.Ctx) error {
+	id := c.Locals("id")
+
+	u := new(UserData)
+	if res := config.DB.Model(models.User{}).First(&u, id); res.RowsAffected <= 0 {
+		return c.JSON(fiber.Map{"error": true, "general": "Cannot find the User"})
+	}
+
+	return c.JSON(u)
 }
