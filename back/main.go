@@ -37,5 +37,9 @@ func main() {
 	app.Use(helpers.SecureAuth())
 	routes.UserRoutes(app)
 	routes.AdminRoutes(app)
+	port := os.Getenv("APP_PORT")
+	if port == "" {
+		port = "8080"
+	}
 	log.Fatal(app.Listen(fmt.Sprintf(":%v", os.Getenv("APP_PORT"))))
 }
