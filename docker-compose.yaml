@@ -30,8 +30,8 @@ services:
         environment: 
             PORT: 5000
             REACT_APP_PUBLIC_API_URL: https://us-central1-silicon-airlock-153323.cloudfunctions.net
-            REACT_APP_ADMIN_URL: http://127.0.0.1:5001
-            REACT_APP_API_URL: http://127.0.0.1:8080
+            REACT_APP_ADMIN_URL: http://143.198.183.254:5001
+            REACT_APP_API_URL: http://143.198.183.254:8080
         networks: 
             - app
 
@@ -46,7 +46,7 @@ services:
         environment: 
             PORT: 5001
             REACT_APP_PUBLIC_API_URL: https://us-central1-silicon-airlock-153323.cloudfunctions.net
-            REACT_APP_API_URL: http://127.0.0.1:8080
+            REACT_APP_API_URL: http://143.198.183.254:8080
         networks: 
             - app
 
