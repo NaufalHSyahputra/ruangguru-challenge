@@ -41,7 +41,7 @@ func (redeem *Redeem) GetRedeem(args ...string) *gorm.DB {
 
 func (redeem *Redeem) CheckRedeemExistByCustId() int64 {
 	var result int64
-	config.DB.Model(redeem).Where("user_id = ?", redeem.CustId).Count(&result)
+	config.DB.Model(redeem).Where("cust_id = ?", redeem.CustId).Count(&result)
 	return result
 }
 

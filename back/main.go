@@ -12,8 +12,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/joho/godotenv"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 func main() {
@@ -23,8 +21,8 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 	//Database
-	config.NewSQLiteDB()
-	db, _ := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	db := config.NewDB()
+	// db, _ := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
 
 	// sqlDB := db.DB()
 	database.InitMigration(db)

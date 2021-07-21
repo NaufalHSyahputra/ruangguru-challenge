@@ -1,4 +1,4 @@
-FROM golang:1.16-alpine
+FROM tetafro/golang-gcc:latest
 
 WORKDIR /app/go
 

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -43,6 +44,20 @@ func DbURL(dbConfig *DBConfig) string {
 }
 func NewSQLiteDB() *gorm.DB {
 	DB, err := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
+	if err != nil {
+		log.Panic(err)
+	}
+	return DB
+}
+func NewPostgresDB() *gorm.DB {
+	username := os.Getenv("DB_USERNAME")
+	password := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_DATABASE")
+	dbHost := os.Getenv("DB_HOST")
+
+	dbUri := fmt.Sprintf("host=%s user=%s dbname=%s sslmode=disable password=%s", dbHost, username, dbName, password) //Build connection string
+	DB, err := gorm.Open(postgres.Open(dbUri), &gorm.Config{})
+
 	if err != nil {
 		log.Panic(err)
 	}
