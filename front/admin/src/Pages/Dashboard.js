@@ -3,57 +3,33 @@ import clsx from "clsx";
 import { makeStyles } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
-import Box from "@material-ui/core/Box";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
-import { Redirect, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import CardContent from "@material-ui/core/CardContent";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Link from "@material-ui/core/Link";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import NotificationsIcon from "@material-ui/icons/Notifications";
-import { mainListItems, secondaryListItems } from "../listItems";
-import PrizeCreated from "../Components/PrizeCreated";
-import PrizeInDelivery from "../Components/PrizeInDelivery";
-import PrizeRejected from "../Components/PrizeRejected";
-import PrizeTotal from "../Components/PrizeTotal";
 import { Card, TableContainer } from "@material-ui/core";
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import TableBody from "@material-ui/core/TableBody";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import TextField from "@material-ui/core/TextField";
 import { getRedeemData, updateRedeemData } from "../Services/DashboarService";
 import Swal from "sweetalert2";
-import { AlertSuccess } from "../Helpers/SweetalertHelper";
+import { AlertError, AlertSuccess } from "../Helpers/SweetalertHelper";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import ListSubheader from "@material-ui/core/ListSubheader";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {"Copyright © "}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{" "}
-      {new Date().getFullYear()}
-      {"."}
-    </Typography>
-  );
-}
 
 const drawerWidth = 240;
 
@@ -146,10 +122,12 @@ export default function Dashboard() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
   useEffect(() => {
     async function fetchData() {
       const [result, error] = await getRedeemData();
+      if (error) { 
+        console.log(error.response)
+      }
       setData(result.data.data);
     }
     fetchData();
@@ -171,7 +149,12 @@ export default function Dashboard() {
         const [result, error] = await updateRedeemData(id, {
           status: value.value,
         });
-        AlertSuccess.fire({ text: "Update Status Success" });
+        if (error) { 
+          AlertError.fire({text: "Update Status Failed"})
+        }
+        if (result) { 
+          AlertSuccess.fire({ text: "Update Status Success" });
+        }
       }
     });
   };

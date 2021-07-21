@@ -21,6 +21,7 @@ export default function useFindUser() {
         });
     }
     findUser();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return {
     user,

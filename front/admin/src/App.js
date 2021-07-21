@@ -1,8 +1,8 @@
-import React, { Suspense, useState } from "react";
+import React, { Suspense } from "react";
 // import routes from "./Routes/index";
 import SignIn from "./Pages/SignIn";
 import { UserContext } from "./Context/UserContext";
-import { BrowserRouter as Router, Route, Switch, Redirect,useHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 import useFindUser from './Hooks/useFindUser';
 import Dashboard from './Pages/Dashboard';
 function PrivateRoute(props) {
@@ -20,10 +20,9 @@ function PrivateRoute(props) {
 
 function App() {
   const { user, setUser, isLoading } = useFindUser();
-  const [test, setTest] = useState(null)
-  const history = useHistory();
+  // const [test, setTest] = useState(null)
   React.useEffect(() => {
-    setTest(user)
+    // setTest(user)
   }, []);
   return (
     <Suspense>

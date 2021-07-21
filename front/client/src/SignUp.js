@@ -3,8 +3,6 @@ import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import TextField from "@material-ui/core/TextField";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
 import Link from "@material-ui/core/Link";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -14,7 +12,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import { FormControl, MenuItem } from "@material-ui/core";
 import { useState } from "react";
 import { useEffect } from "react";
 import { getUserData, saveUserData } from "./Services/ClientService";
@@ -79,11 +76,18 @@ export default function SignUp() {
   const [packages, setPackages] = useState([]);
   const [packageSelected, setPackageSelected] = useState({});
   const [submitDisabled, setSubmitDisabled] = useState(true);
+  const [alreadyInput, setAlreadyInput] = useState("")
   useEffect(() => {
     const urlSearchParams = new URLSearchParams(window.location.search);
     const params = Object.fromEntries(urlSearchParams.entries());
     if (params.userId) {
       fetchData();
+      if (localStorage.getItem("alreadyinput") === params.userId) { 
+        setAlreadyInput(localStorage.getItem("alreadyinput"))
+      } else { 
+        setAlreadyInput("")
+        localStorage.setItem("alreadyinput", "")
+      }
     }
     async function fetchData() {
       const [result, error] = await getUserData({
@@ -192,12 +196,13 @@ export default function SignUp() {
       AlertSuccess.fire({
         text: "Data anda berhasil disimpan. Silahkan tunggu sampai barang anda sampai."
       }).then(() => {
-        localStorage.setItem("alreadyinput", true);
+        localStorage.setItem("alreadyinput", userID);
+        setAlreadyInput(userID)
       })
     }
   };
   const classes = useStyles();
-  if (localStorage.getItem("alreadyinput")) { 
+  if (alreadyInput) { 
     return (
       <div>
         <CssBaseline />
@@ -232,12 +237,10 @@ export default function SignUp() {
               <RedeemIcon />
             </Avatar>
             <Typography variant="h5" gutterBottom>
-              YOU WON. CLAIM YOUR PRIZE!
+              YOU ALREADY CLAIM THE PRIZE
             </Typography>
             <Typography variant="body1" gutterBottom align="center">
-              Selamat, anda berhak mendapatkan hadiah berupa :{" "}
-              <b>{packageSelected.prize_id}</b> dari Ruangguru. Silahkan lengkapi
-              form dibawah agar kami dapat mengirimkan hadiah mu.
+              Anda sudah pernah melakukan klaim
             </Typography>
           </div>
           <Box mt={5}>
