@@ -50,7 +50,8 @@ func (user *User) CheckPassword(providedPassword string) error {
 
 // CreateUserRecord creates a user record in the database
 func (user *User) CreateUser() error {
-	result := config.DB.Create(&user)
+	db := config.NewSQLiteDB()
+	result := db.Create(&user)
 	if result.Error != nil {
 		return result.Error
 	}

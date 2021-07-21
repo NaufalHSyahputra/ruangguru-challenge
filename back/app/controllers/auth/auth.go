@@ -18,6 +18,7 @@ type UserData struct {
 }
 
 func LoginUser(c *fiber.Ctx) error {
+	db := config.NewSQLiteDB()
 	p := new(requests.LoginForm)
 	if err := c.BodyParser(p); err != nil {
 		return err
@@ -30,8 +31,8 @@ func LoginUser(c *fiber.Ctx) error {
 	}
 	u := new(models.User)
 	u2 := new(UserData)
-	config.DB.Model(models.User{}).Where("email = ?", p.Email).First(&u2)
-	if res := config.DB.Where("email = ?", p.Email).First(&u); res.RowsAffected <= 0 {
+	db.Model(models.User{}).Where("email = ?", p.Email).First(&u2)
+	if res := db.Where("email = ?", p.Email).First(&u); res.RowsAffected <= 0 {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"success": false,
 			"message": "Invalid Email!",
@@ -62,9 +63,10 @@ func LoginUser(c *fiber.Ctx) error {
 
 func GetUser(c *fiber.Ctx) error {
 	id := c.Locals("id")
+	db := config.NewSQLiteDB()
 
 	u := new(UserData)
-	if res := config.DB.Model(models.User{}).First(&u, id); res.RowsAffected <= 0 {
+	if res := db.Model(models.User{}).First(&u, id); res.RowsAffected <= 0 {
 		return c.JSON(fiber.Map{"error": true, "general": "Cannot find the User"})
 	}
 

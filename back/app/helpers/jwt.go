@@ -3,7 +3,7 @@ package helpers
 import (
 	"os"
 	"rg_backend/app/models"
-	db "rg_backend/config"
+	"rg_backend/config"
 	"strconv"
 	"strings"
 	"time"
@@ -45,7 +45,9 @@ func GenerateAccessClaims(id uint) (*models.Claims, string) {
 
 // GenerateRefreshClaims returns refresh_token
 func GenerateRefreshClaims(cl *models.Claims) string {
-	result := db.DB.Where(&models.Claims{
+	db := config.NewSQLiteDB()
+
+	result := db.Where(&models.Claims{
 		StandardClaims: jwt.StandardClaims{
 			Issuer: cl.Issuer,
 		},
@@ -54,7 +56,7 @@ func GenerateRefreshClaims(cl *models.Claims) string {
 	// checking the number of refresh tokens stored.
 	// If the number is higher than 3, remove all the refresh tokens and leave only new one.
 	if result.RowsAffected > 3 {
-		db.DB.Where(&models.Claims{
+		db.Where(&models.Claims{
 			StandardClaims: jwt.StandardClaims{Issuer: cl.Issuer},
 		}).Delete(&models.Claims{})
 	}
@@ -70,7 +72,7 @@ func GenerateRefreshClaims(cl *models.Claims) string {
 	}
 
 	// create a claim on DB
-	db.DB.Create(&refreshClaim)
+	db.Create(&refreshClaim)
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaim)
 	refreshTokenString, err := refreshToken.SignedString(jwtKey)

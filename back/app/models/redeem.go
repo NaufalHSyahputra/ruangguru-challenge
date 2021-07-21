@@ -35,19 +35,22 @@ type RedeemLog struct {
 }
 
 func (redeem *Redeem) GetRedeem(args ...string) *gorm.DB {
-	query := config.DB.Model(redeem).Preload("RedeemLogs").Select(args)
+	db := config.NewSQLiteDB()
+	query := db.Model(redeem).Preload("RedeemLogs").Select(args)
 	return query
 }
 
 func (redeem *Redeem) CheckRedeemExistByCustId() int64 {
+	db := config.NewSQLiteDB()
 	var result int64
-	config.DB.Model(redeem).Where("cust_id = ?", redeem.CustId).Count(&result)
+	db.Model(redeem).Where("cust_id = ?", redeem.CustId).Count(&result)
 	return result
 }
 
 //
 func (redeem *Redeem) CreateRedeem() error {
-	result := config.DB.Create(&redeem)
+	db := config.NewSQLiteDB()
+	result := db.Create(&redeem)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -55,16 +58,17 @@ func (redeem *Redeem) CreateRedeem() error {
 }
 
 func (redeem *Redeem) UpdateRedeemStatus(userID uint) error {
+	db := config.NewSQLiteDB()
 	queryResult := Redeem{}
-	resultQuery := config.DB.Model(redeem).Select("redeems.status").Find(&queryResult, redeem.ID)
+	resultQuery := db.Model(redeem).Select("redeems.status").Find(&queryResult, redeem.ID)
 	if resultQuery.Error != nil {
 		return resultQuery.Error
 	}
-	result := config.DB.Model(&Redeem{}).Where("id", redeem.ID).Update("status", redeem.Status)
+	result := db.Model(&Redeem{}).Where("id", redeem.ID).Update("status", redeem.Status)
 	if result.Error != nil {
 		return result.Error
 	}
-	resultLog := config.DB.Create(&RedeemLog{
+	resultLog := db.Create(&RedeemLog{
 		RedeemID:  redeem.ID,
 		Action:    "update",
 		OldStatus: queryResult.Status,
