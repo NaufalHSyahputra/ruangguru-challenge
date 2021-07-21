@@ -135,7 +135,7 @@ export default function Dashboard() {
 
   const updateStatus = async (id) => {
     Swal.fire({
-      title: "Select field validation",
+      title: "Change Status",
       input: "select",
       inputOptions: {
         created: "Created",
