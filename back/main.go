@@ -11,15 +11,14 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 	//env
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
 	//Database
 	db := config.NewDB()
 	// db, _ := gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
