@@ -13,6 +13,7 @@ import Container from "@material-ui/core/Container";
 import { useHistory } from "react-router-dom";
 import useFindUser from '../Hooks/useFindUser';
 import axios from "axios";
+import { AlertError } from './../Helpers/SweetalertHelper';
 let url = process.env.REACT_APP_API_URL;
 
 function Copyright() {
@@ -84,8 +85,9 @@ export default function SignIn() {
         history.push("/home")
       })
       .catch((err) => {
-        // setError(err.response.data);
-        console.log(err)
+        AlertError.fire({
+          text: err.response.data.message
+        })
       });
   };
   return (
