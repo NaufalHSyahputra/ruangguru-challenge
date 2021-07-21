@@ -31,7 +31,7 @@ function App() {
           <Switch>
             <Route exact path="/" component={SignIn} />
             <Route path="/login" component={SignIn} />
-            <PrivateRoute path="/home" component={Dashboard} user={test}/>
+            <PrivateRoute path="/home" component={Dashboard}/>
             {/* <Route component={NotFound} /> */}
           </Switch>
         </UserContext.Provider>

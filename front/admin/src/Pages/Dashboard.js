@@ -154,6 +154,7 @@ export default function Dashboard() {
         }
         if (result) { 
           AlertSuccess.fire({ text: "Update Status Success" });
+          window.location.reload()
         }
       }
     });
