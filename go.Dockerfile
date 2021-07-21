@@ -8,8 +8,8 @@ RUN go mod download
 
 COPY ./back .
 
-RUN go build -o ./rg_backend
+# RUN go build -o ./rg_backend
 
 EXPOSE 8080
 
-CMD [ "./rg_backend" ]
+CMD [ "go", "run main.go" ]
